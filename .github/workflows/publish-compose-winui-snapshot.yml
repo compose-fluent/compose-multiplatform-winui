@@ -45,14 +45,14 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Test plugin and stage publications
         run: |
-          $validationMaven = Join-Path $env:RUNNER_TEMP 'compose-winui-maven'
+          $validationMaven = Join-Path $env:RUNNER_TEMP "compose-winui-maven-$env:GITHUB_SHA"
           ./gradlew.bat :compose-winui:test :compose-winui:validatePlugins :compose-winui:publishAllPublicationsToWinuiRepository "-PcomposeWinUi.publicationRepository=$validationMaven" --no-configuration-cache --no-parallel --console=plain
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           ./gradlew.bat -p ../components/resources/winui winuiJvmTest winuiMingwTest publishAllPublicationsToWinuiRepository "-PcomposeWinUi.publicationRepository=$validationMaven" --no-configuration-cache --no-parallel --console=plain
           exit $LASTEXITCODE
       - name: Verify generated and transitive Resources on both targets
         run: |
-          $validationMaven = Join-Path $env:RUNNER_TEMP 'compose-winui-maven'
+          $validationMaven = Join-Path $env:RUNNER_TEMP "compose-winui-maven-$env:GITHUB_SHA"
           $consumerArguments = @('-p', 'compose-winui/integration-tests/resources-consumer', 'runWinuiJvmResourceProbe', 'runDebugExecutableWinuiMingw', "-PcomposeWinUi.repository=$validationMaven", '--configuration-cache', '--no-parallel', '--console=plain')
           ./gradlew.bat @consumerArguments
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -60,9 +60,9 @@ jobs:
           exit $LASTEXITCODE
       - name: Publish snapshot
         run: |
-          ./gradlew.bat :compose-winui:publishPluginMavenPublicationToCentralSnapshotsRepository --no-configuration-cache --no-parallel --console=plain
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           ./gradlew.bat -p ../components/resources/winui publishAllPublicationsToCentralSnapshotsRepository --no-configuration-cache --no-parallel --console=plain
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./gradlew.bat :compose-winui:publishPluginMavenPublicationToCentralSnapshotsRepository --no-configuration-cache --no-parallel --console=plain
           exit $LASTEXITCODE
       - name: Verify public snapshot consumption
         run: |

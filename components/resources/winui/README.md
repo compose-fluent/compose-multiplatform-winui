@@ -1,9 +1,13 @@
 # Compose Resources for WinUI
 
-This build publishes `io.github.compose-fluent.compose.components:components-resources:1.12-SNAPSHOT`
+This build publishes `io.github.compose-fluent.compose.components:components-resources:1.12.0-alpha01-SNAPSHOT`
 with `winuiJvm` and `winuiMingw` variants. It reuses the Resources common API,
 blocking resource state, Skia image/SVG decoding and byte-backed fonts. The regular
 Resources build remains in `../library`.
+
+Resources follows the CMP WinUI version (`1.12.0-alpha01`), with `-SNAPSHOT`
+appended for this development publication. The Gradle plugin has its own
+Compose compatibility version (`1.12-SNAPSHOT`).
 
 Publication is limited to the JVM and MinGW binaries plus the required KMP root
 metadata. No Android, Apple, Linux, JS or Wasm target or forwarding publication is
@@ -33,7 +37,7 @@ Other version properties:
 
 | Property | Default |
 | --- | --- |
-| `composeWinUi.version` | `1.12-SNAPSHOT` (Resources publication) |
+| `composeWinUi.version` | `${composeWinUi.coreVersion}-SNAPSHOT` (currently `1.12.0-alpha01-SNAPSHOT`) |
 | `composeWinUi.coreVersion` | `1.12.0-alpha01` (published core release) |
 | `composeWinUi.skikoVersion` | `0.150.1-alpha02` |
 

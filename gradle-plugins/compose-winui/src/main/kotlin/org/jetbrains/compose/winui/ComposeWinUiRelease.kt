@@ -23,7 +23,7 @@ internal object ComposeWinUiRelease {
         family("org.jetbrains.compose.foundation", "1.12.1", "1.12.0-alpha01", "foundation", "foundation-layout")
         family("org.jetbrains.compose.material", "1.12.1", "1.12.0-alpha01", "material", "material-ripple")
         family("org.jetbrains.compose.runtime", "1.12.1", "1.12.0-alpha01", "runtime", "runtime-saveable")
-        family("org.jetbrains.compose.components", "1.12.1", "1.12-SNAPSHOT", "components-resources")
+        family("org.jetbrains.compose.components", "1.12.1", "1.12.0-alpha01-SNAPSHOT", "components-resources")
         family("org.jetbrains.compose.ui", "1.12.1", "1.12.0-alpha01",
             "ui", "ui-geometry", "ui-graphics", "ui-text", "ui-unit", "ui-util", "ui-backhandler")
         family("org.jetbrains.compose.material3", "1.12.0-alpha03", "1.12.0-alpha01",

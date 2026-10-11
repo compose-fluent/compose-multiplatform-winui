@@ -31,7 +31,7 @@ class ResolutionTest {
             publish("org.jetbrains.skiko", "skiko", "0.150.1")
             publish("io.github.compose-fluent", "skiko-winui", "0.150.1-alpha02")
             publish("org.jetbrains.compose.components", "components-resources", "1.12.1")
-            publish("io.github.compose-fluent.compose.components", "components-resources", "1.12-SNAPSHOT")
+            publish("io.github.compose-fluent.compose.components", "components-resources", "1.12.0-alpha01-SNAPSHOT")
             directory.resolve("settings.gradle").writeText("rootProject.name = 'resolution-test'")
             directory.resolve("build.gradle").writeText("""
                 plugins { id 'compose-winui' }
@@ -78,7 +78,7 @@ class ResolutionTest {
             assertTrue(result.output.split("SELECTED=org.jetbrains.compose.ui:ui:1.12.1").size == 4, result.output)
             assertTrue(result.output.contains("SKIKO=io.github.compose-fluent:skiko-winui:0.150.1-alpha02"), result.output)
             assertTrue(result.output.split("SKIKO=org.jetbrains.skiko:skiko:0.150.1").size == 4, result.output)
-            assertTrue(result.output.contains("RESOURCES=io.github.compose-fluent.compose.components:components-resources:1.12-SNAPSHOT"), result.output)
+            assertTrue(result.output.contains("RESOURCES=io.github.compose-fluent.compose.components:components-resources:1.12.0-alpha01-SNAPSHOT"), result.output)
             assertTrue(result.output.split("RESOURCES=org.jetbrains.compose.components:components-resources:1.12.1").size == 4, result.output)
             val jvmResult = GradleRunner.create().withProjectDir(directory).withPluginClasspath()
                 .withArguments("jvmProbe", "-PenableJvm=true", "--offline", "--configuration-cache")
@@ -87,7 +87,7 @@ class ResolutionTest {
                 "io.github.compose-fluent.compose.ui:ui:1.12.0-alpha01" else "org.jetbrains.compose.ui:ui:1.12.1"
             assertTrue(jvmResult.output.contains("SELECTED=$expected"), jvmResult.output)
             val expectedResources = if (System.getProperty("os.name").startsWith("Windows"))
-                "io.github.compose-fluent.compose.components:components-resources:1.12-SNAPSHOT"
+                "io.github.compose-fluent.compose.components:components-resources:1.12.0-alpha01-SNAPSHOT"
             else "org.jetbrains.compose.components:components-resources:1.12.1"
             assertTrue(jvmResult.output.contains("RESOURCES=$expectedResources"), jvmResult.output)
             val cached = GradleRunner.create().withProjectDir(directory).withPluginClasspath()

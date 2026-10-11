@@ -8,8 +8,8 @@ plugins {
 tasks.withType<Test>().configureEach { jvmArgs("--enable-native-access=ALL-UNNAMED") }
 
 group = "io.github.compose-fluent.compose.components"
-version = providers.gradleProperty("composeWinUi.version").getOrElse("1.12-SNAPSHOT")
 val coreVersion = providers.gradleProperty("composeWinUi.coreVersion").getOrElse("1.12.0-alpha01")
+version = providers.gradleProperty("composeWinUi.version").getOrElse("$coreVersion-SNAPSHOT")
 val skikoVersion = providers.gradleProperty("composeWinUi.skikoVersion").getOrElse("0.150.1-alpha02")
 
 providers.gradleProperty("composeWinUi.publicationRepository").orNull?.let { repository ->

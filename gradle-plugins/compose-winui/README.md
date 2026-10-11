@@ -11,6 +11,8 @@ consumers. Dependency redirection does not change the project's toolchain.
 
 The plugin release line `1.12` represents Compose 1.12 compatibility. The current
 development version is `1.12-SNAPSHOT`, published to Central Portal Snapshots.
+Resources follows the CMP WinUI core version rather than the plugin version:
+the adapter for core `1.12.0-alpha01` is currently `1.12.0-alpha01-SNAPSHOT`.
 Configure `settings.gradle.kts` to resolve the short plugin ID to its Maven module:
 
 ```kotlin
@@ -76,7 +78,7 @@ Defaults include Resources as part of CMP, alongside the 36 modules published in
 | Family | Exact CMP source version | WinUI version |
 | --- | --- | --- |
 | Animation, Foundation, Material, Runtime, UI | `1.12.1` | `1.12.0-alpha01` |
-| Resources | `1.12.1` | `1.12-SNAPSHOT` |
+| Resources | `1.12.1` | `1.12.0-alpha01-SNAPSHOT` |
 | Material3 | `1.12.0-alpha03` | `1.12.0-alpha01` |
 | Material3 Adaptive | `1.3.0-rc01` | `1.3.0-alpha01` |
 | Lifecycle | `2.11.0` | `2.11.0-alpha01` |
@@ -180,6 +182,6 @@ It uses the existing organization secrets `MAVEN_CENTRAL_USERNAME` and
 `MAVEN_CENTRAL_PASSWORD`. Local publishing can use the same environment variables:
 
 ```text
-gradlew :compose-winui:publishPluginMavenPublicationToCentralSnapshotsRepository
 gradlew -p ../components/resources/winui publishAllPublicationsToCentralSnapshotsRepository
+gradlew :compose-winui:publishPluginMavenPublicationToCentralSnapshotsRepository
 ```

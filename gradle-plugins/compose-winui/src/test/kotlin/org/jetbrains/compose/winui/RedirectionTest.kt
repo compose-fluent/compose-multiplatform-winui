@@ -25,7 +25,7 @@ class RedirectionTest {
         assertEquals("io.github.compose-fluent:skiko-winui:0.150.1-alpha02",
             resolve("org.jetbrains.skiko", "skiko-awt", "0.150.1"))
         for (module in listOf("components-resources", "components-resources-desktop", "components-resources-jvm", "components-resources-mingwx64")) {
-            assertEquals("io.github.compose-fluent.compose.components:components-resources:1.12-SNAPSHOT",
+            assertEquals("io.github.compose-fluent.compose.components:components-resources:1.12.0-alpha01-SNAPSHOT",
                 resolve("org.jetbrains.compose.components", module, "1.12.1"))
         }
         assertNull(resolve("org.jetbrains.androidx.navigation3", "navigation3-ui", "1.1.7"))
