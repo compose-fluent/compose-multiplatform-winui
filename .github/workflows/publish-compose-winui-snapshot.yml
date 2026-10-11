@@ -1,0 +1,78 @@
+name: Publish Compose WinUI snapshot
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/compose-winui-1.12-snapshot
+    paths:
+      - '.github/workflows/publish-compose-winui-snapshot.yml'
+      - 'gradle-plugins/compose-winui/**'
+      - 'gradle-plugins/settings.gradle.kts'
+      - 'components/resources/library/src/**'
+      - 'components/resources/winui/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: compose-winui-snapshot
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: gradle-plugins
+    env:
+      MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+      MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+      GRADLE_OPTS: -Dorg.gradle.workers.max=2
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check publishing credentials
+        run: |
+          $required = 'MAVEN_CENTRAL_USERNAME', 'MAVEN_CENTRAL_PASSWORD'
+          $missing = @($required | Where-Object { [string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($_)) })
+          if ($missing.Count) { throw "Organization publishing secrets unavailable: $($missing -join ', ')" }
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Test plugin and stage publications
+        run: |
+          $validationMaven = Join-Path $env:RUNNER_TEMP 'compose-winui-maven'
+          ./gradlew.bat :compose-winui:test :compose-winui:validatePlugins :compose-winui:publishAllPublicationsToWinuiRepository "-PcomposeWinUi.publicationRepository=$validationMaven" --no-configuration-cache --no-parallel --console=plain
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./gradlew.bat -p ../components/resources/winui winuiJvmTest winuiMingwTest publishAllPublicationsToWinuiRepository "-PcomposeWinUi.publicationRepository=$validationMaven" --no-configuration-cache --no-parallel --console=plain
+          exit $LASTEXITCODE
+      - name: Verify generated and transitive Resources on both targets
+        run: |
+          $validationMaven = Join-Path $env:RUNNER_TEMP 'compose-winui-maven'
+          $consumerArguments = @('-p', 'compose-winui/integration-tests/resources-consumer', 'runWinuiJvmResourceProbe', 'runDebugExecutableWinuiMingw', "-PcomposeWinUi.repository=$validationMaven", '--configuration-cache', '--no-parallel', '--console=plain')
+          ./gradlew.bat @consumerArguments
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./gradlew.bat @consumerArguments
+          exit $LASTEXITCODE
+      - name: Publish snapshot
+        run: |
+          ./gradlew.bat :compose-winui:publishPluginMavenPublicationToCentralSnapshotsRepository --no-configuration-cache --no-parallel --console=plain
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./gradlew.bat -p ../components/resources/winui publishAllPublicationsToCentralSnapshotsRepository --no-configuration-cache --no-parallel --console=plain
+          exit $LASTEXITCODE
+      - name: Verify public snapshot consumption
+        run: |
+          ./gradlew.bat -p compose-winui/integration-tests/resources-consumer runWinuiJvmResourceProbe runDebugExecutableWinuiMingw --refresh-dependencies --configuration-cache --no-parallel --console=plain
+          exit $LASTEXITCODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compose-winui-snapshot-reports
+          path: |
+            gradle-plugins/compose-winui/build/reports/
+            components/resources/winui/build/reports/
+          retention-days: 14
