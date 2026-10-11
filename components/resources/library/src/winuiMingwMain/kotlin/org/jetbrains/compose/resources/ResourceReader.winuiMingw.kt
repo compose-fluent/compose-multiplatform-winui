@@ -16,7 +16,7 @@ internal object WindowsResourceReader : ResourceReader {
 
     override fun getUri(path: String): String = memScoped {
         val diskPath = diskPath(path)
-        if (GetFileAttributesW(diskPath) == INVALID_FILE_ATTRIBUTES) throw MissingResourceException(path)
+        if (GetFileAttributesW(windowsExtendedPath(diskPath)) == INVALID_FILE_ATTRIBUTES) throw MissingResourceException(path)
         windowsFileUri(diskPath)
     }
 
@@ -30,7 +30,7 @@ internal object WindowsResourceReader : ResourceReader {
     }
 
     private fun readFile(path: String, offset: Long, requestedSize: Long?): ByteArray = memScoped {
-        val file = CreateFileW(diskPath(path), GENERIC_READ, FILE_SHARE_READ.toUInt(),
+        val file = CreateFileW(windowsExtendedPath(diskPath(path)), GENERIC_READ, FILE_SHARE_READ.toUInt(),
             null, OPEN_EXISTING.toUInt(), FILE_ATTRIBUTE_NORMAL.toUInt(), null)
         if (file == INVALID_HANDLE_VALUE || file == null) throw MissingResourceException(path)
         try {
@@ -61,4 +61,11 @@ internal object WindowsResourceReader : ResourceReader {
             CloseHandle(file)
         }
     }
+}
+
+/** Wide Win32 file APIs need this prefix when the app has no longPathAware manifest. */
+internal fun windowsExtendedPath(path: String): String = when {
+    path.startsWith("\\\\?\\") -> path
+    path.startsWith("\\\\") -> "\\\\?\\UNC\\" + path.removePrefix("\\\\")
+    else -> "\\\\?\\$path"
 }

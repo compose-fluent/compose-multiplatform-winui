@@ -10,6 +10,12 @@ import androidx.compose.ui.unit.Density
 import org.jetbrains.compose.resources.vector.toImageVector
 
 class WindowsResourceReaderTest {
+    @Test fun supportsExtendedLocalAndNetworkPaths() {
+        assertEquals("\\\\?\\C:\\app\\resource.txt", windowsExtendedPath("C:\\app\\resource.txt"))
+        assertEquals("\\\\?\\UNC\\server\\share\\resource.txt", windowsExtendedPath("\\\\server\\share\\resource.txt"))
+        assertEquals("\\\\?\\C:\\app\\resource.txt", windowsExtendedPath("\\\\?\\C:\\app\\resource.txt"))
+    }
+
     @Test fun decodesBitmapWithAutomaticallyStagedSkikoRuntime() = runBlocking<Unit> {
         val image = WindowsResourceReader.read("2.png").toImageBitmap(160, 160)
         assertTrue(image.width > 0 && image.height > 0)

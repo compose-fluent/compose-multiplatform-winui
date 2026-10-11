@@ -118,7 +118,9 @@ automatic staging. Projects without a Skiko WinUI dependency download no runtime
 
 Alongside `org.jetbrains.compose`, the plugin also stages generated and transitive
 Compose resources in `compose-resources` beside MinGW executables and tests. This
-uses the Compose plugin's existing KMP resource resolver; consumers need no fork
+directory is also preserved in the Windows Toolkit's final application package,
+and Toolkit source scanning waits for Compose resource accessors to be generated.
+This uses the Compose plugin's existing KMP resource resolver; consumers need no fork
 of the Compose Gradle plugin or manual resource-copy task. See the
 [Resources build](../../components/resources/winui/README.md) for its publication
 and platform implementation details.

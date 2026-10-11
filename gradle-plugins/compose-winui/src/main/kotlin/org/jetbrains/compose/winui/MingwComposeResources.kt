@@ -32,6 +32,13 @@ internal object MingwComposeResources {
                     }
                 }
                 binary.linkTaskProvider.configure { it.dependsOn(sync) }
+                if (binary is Executable) {
+                    val directory = project.provider { binary.outputDirectory.resolve("compose-resources") }
+                    val staged = project.files(project.fileTree(directory)).builtBy(sync)
+                    WindowsToolkitComposeResources.configure(
+                        project, "${target.name}:${binary.compilation.name}:${binary.name}", directory, staged,
+                    )
+                }
             }
         }
     }

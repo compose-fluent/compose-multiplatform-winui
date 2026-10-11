@@ -58,6 +58,14 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           ./gradlew.bat @consumerArguments
           exit $LASTEXITCODE
+      - name: Verify Resources in the Windows Toolkit application layout
+        run: |
+          $validationMaven = Join-Path $env:RUNNER_TEMP "compose-winui-maven-$env:GITHUB_SHA"
+          $consumerArguments = @('-p', 'compose-winui/integration-tests/resources-consumer', 'runDebugExecutableWinuiMingw', "-PcomposeWinUi.repository=$validationMaven", '-PcomposeWinUi.testToolkit=true', '--configuration-cache', '--no-parallel', '--console=plain')
+          ./gradlew.bat @consumerArguments
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./gradlew.bat @consumerArguments
+          exit $LASTEXITCODE
       - name: Publish snapshot
         run: |
           ./gradlew.bat -p ../components/resources/winui publishAllPublicationsToCentralSnapshotsRepository --no-configuration-cache --no-parallel --console=plain
